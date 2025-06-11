@@ -3,6 +3,7 @@ import streamlit as st
 import sys
 from pathlib import Path
 import importlib
+from Services.database import Database
 
 # 1. Configuração ABSOLUTA PRIMEIRO
 st.set_page_config(page_title="Sistema de Cadastro", layout="wide", initial_sidebar_state="auto")
@@ -10,10 +11,15 @@ st.set_page_config(page_title="Sistema de Cadastro", layout="wide", initial_side
 # 2. Configuração de imports DEPOIS da configuração
 sys.path.append(str(Path(__file__).parent))
 
-# 3. Dicionário de páginas disponíveis
+# 3. Inicialização do banco de dados
+db = Database()
+if not db.create_tables():
+    st.error("Erro ao inicializar o banco de dados. Verifique os logs para mais detalhes.")
+
+# 4. Dicionário de páginas disponíveis
 PAGES = { "Funcionário": "Views.PageFuncionario", "Produto": "Views.PageProduto", "Vendas": "Views.PageVenda"}
 
-# 4. Função para carregar páginas de forma dinâmica
+# 5. Função para carregar páginas de forma dinâmica
 def load_page(page_name):
     """Carrega um módulo de página dinamicamente com tratamento de erros"""
     try:
@@ -26,7 +32,7 @@ def load_page(page_name):
         st.warning("Entre em contato com o administrador do sistema.")
         return None
 
-# 5. Função principal
+# 6. Função principal
 def main():
     st.title('Sistema de Cadastro de Vendas')
     
@@ -38,6 +44,6 @@ def main():
     show_page = load_page(page_selection)
     if show_page: show_page()
 
-# 6. Ponto de entrada
+# 7. Ponto de entrada
 if __name__ == "__main__":
     main()
